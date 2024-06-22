@@ -15,6 +15,7 @@ def handle_file_upload(upload_type, file_types):
         with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{file_types[0]}') as tmp_file:
             tmp_file.write(uploaded_file.getvalue())
             tmp_file_path = tmp_file.name
+        logging.info(f"File uploaded: {uploaded_file.name}")
         return tmp_file_path, uploaded_file.name
     return None, None
 
@@ -49,6 +50,8 @@ def visualize_data(df, columns):
 def generate_insights(df):
     if not df.empty:
         st.write("Descriptive Statistics:", df.describe())
+    else:
+        st.write("No data available to generate insights.")
 
 # Excel File Analysis Function
 def excel_file_analysis():
@@ -91,10 +94,11 @@ def excel_file_analysis():
 def main():
     st.title("Excel File Analysis Tool")
     st.sidebar.title("Navigation")
+    st.sidebar.write("Click the button below to start analyzing Excel files.")
     if st.sidebar.button("Analyze Excel File"):
         excel_file_analysis()
     else:
-        st.write("Use the sidebar to navigate.")
+        st.write("Use the sidebar to navigate and start the analysis.")
 
 if __name__ == "__main__":
     main()
