@@ -36,8 +36,12 @@ def visualize_data(df, columns):
     figs = []
     for column in columns:
         if pd.api.types.is_numeric_dtype(df[column]):
+            sum_value = df[column].sum()
             fig = px.histogram(df, x=column)
-            fig.update_layout(paper_bgcolor='white', plot_bgcolor='white', font_color='black')
+            fig.update_layout(
+                paper_bgcolor='white', plot_bgcolor='white', font_color='black',
+                title=f"Histogram of {column} (Sum: {sum_value})"
+            )
             st.plotly_chart(fig)
             figs.append(fig)
         else:
