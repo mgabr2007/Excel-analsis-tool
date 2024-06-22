@@ -6,7 +6,7 @@ import plotly.express as px
 import logging
 
 # Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message=s')
 
 # Utility Functions
 def handle_file_upload(upload_type, file_types):
@@ -54,9 +54,12 @@ def generate_insights(df):
     if not df.empty:
         st.write("Descriptive Statistics:", df.describe())
         numeric_df = df.select_dtypes(include=['number'])
-        for column in numeric_df.columns:
-            st.write(f"Correlation of {column} with other numeric columns:")
-            st.write(numeric_df.corr()[column].sort_values(ascending=False))
+        if not numeric_df.empty:
+            st.write("Correlation Matrix:")
+            corr_matrix = numeric_df.corr()
+            st.dataframe(corr_matrix)
+        else:
+            st.write("No numeric columns available for correlation analysis.")
     else:
         st.write("No data available to generate insights.")
 
