@@ -20,7 +20,10 @@ def handle_file_upload(upload_type, file_types):
 
 def read_excel(file):
     try:
-        return pd.read_excel(file, engine='openpyxl')
+        logging.info("Reading Excel file...")
+        df = pd.read_excel(file, engine='openpyxl')
+        logging.info("Excel file read successfully!")
+        return df
     except Exception as e:
         error_message = f"Failed to read Excel file: {e}"
         logging.error(error_message)
@@ -61,12 +64,13 @@ def excel_file_analysis():
     4. **Generate Insights:** Click on "Generate Insights" to view descriptive statistics and other insights from the data.
     """)
 
-    file_path, _ = handle_file_upload("Excel", ['xlsx'])
+    file_path, file_name = handle_file_upload("Excel", ['xlsx'])
     if file_path:
-        st.write(f"File uploaded: {file_path}")
+        st.write(f"File uploaded: {file_name}")
         df = read_excel(file_path)
         if not df.empty:
-            st.write("File read successfully!")
+            st.write("File read successfully! Here is a preview of the data:")
+            st.dataframe(df.head())
             selected_columns = st.multiselect("Select columns to display", df.columns.tolist(), default=df.columns.tolist(), key="columns")
             if selected_columns:
                 st.dataframe(df[selected_columns])
@@ -75,7 +79,13 @@ def excel_file_analysis():
                     figs = visualize_data(df, selected_columns)
                 if st.button("Generate Insights", key="insights"):
                     generate_insights(df)
-            os.remove(file_path)
+            else:
+                st.warning("Please select at least one column to display.")
+        else:
+            st.error("The uploaded file is empty or could not be read.")
+        os.remove(file_path)
+    else:
+        st.info("Please upload an Excel file to proceed.")
 
 # Main Function
 def main():
@@ -83,6 +93,8 @@ def main():
     st.sidebar.title("Navigation")
     if st.sidebar.button("Analyze Excel File"):
         excel_file_analysis()
+    else:
+        st.write("Use the sidebar to navigate.")
 
 if __name__ == "__main__":
     main()
