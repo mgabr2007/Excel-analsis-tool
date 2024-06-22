@@ -77,9 +77,8 @@ def excel_file_analysis():
             selected_columns = st.multiselect("Select columns to display", df.columns.tolist(), default=df.columns.tolist(), key="columns")
             if selected_columns:
                 st.dataframe(df[selected_columns])
-                figs = []
                 if st.button("Visualize Data", key="visualize"):
-                    figs = visualize_data(df, selected_columns)
+                    visualize_data(df, selected_columns)
                 if st.button("Generate Insights", key="insights"):
                     generate_insights(df)
             else:
