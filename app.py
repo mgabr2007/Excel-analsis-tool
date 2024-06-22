@@ -32,29 +32,37 @@ def read_excel(file):
         return pd.DataFrame()
 
 # Visualization Functions
-def visualize_data(df, x_column, y_column, z_column, chart_type):
+def visualize_data(df, x_column, y_column, z_column, chart_type, color_scheme):
     if chart_type == "3D Scatter Plot" and z_column:
-        fig = px.scatter_3d(df, x=x_column, y=y_column, z=z_column, title=f"3D Scatter Plot of {x_column} vs {y_column} vs {z_column}")
+        fig = px.scatter_3d(df, x=x_column, y=y_column, z=z_column, color_continuous_scale=color_scheme, title=f"3D Scatter Plot of {x_column} vs {y_column} vs {z_column}")
     elif chart_type == "3D Line Chart" and z_column:
-        fig = px.line_3d(df, x=x_column, y=y_column, z=z_column, title=f"3D Line Chart of {x_column} vs {y_column} vs {z_column}")
+        fig = px.line_3d(df, x=x_column, y=y_column, z=z_column, color_continuous_scale=color_scheme, title=f"3D Line Chart of {x_column} vs {y_column} vs {z_column}")
     elif chart_type == "3D Surface Plot" and z_column:
-        fig = px.surface(df, x=x_column, y=y_column, z=z_column, title=f"3D Surface Plot of {x_column} vs {y_column} vs {z_column}")
+        fig = px.surface(df, x=x_column, y=y_column, z=z_column, color_continuous_scale=color_scheme, title=f"3D Surface Plot of {x_column} vs {y_column} vs {z_column}")
     elif chart_type == "Scatter Plot":
-        fig = px.scatter(df, x=x_column, y=y_column, title=f"Scatter Plot of {x_column} vs {y_column}")
+        fig = px.scatter(df, x=x_column, y=y_column, color_continuous_scale=color_scheme, title=f"Scatter Plot of {x_column} vs {y_column}")
     elif chart_type == "Line Chart":
-        fig = px.line(df, x=x_column, y=y_column, title=f"Line Chart of {x_column} vs {y_column}")
+        fig = px.line(df, x=x_column, y=y_column, color_continuous_scale=color_scheme, title=f"Line Chart of {x_column} vs {y_column}")
     elif chart_type == "Bar Chart":
-        fig = px.bar(df, x=x_column, y=y_column, title=f"Bar Chart of {x_column} vs {y_column}")
+        fig = px.bar(df, x=x_column, y=y_column, color_continuous_scale=color_scheme, title=f"Bar Chart of {x_column} vs {y_column}")
     elif chart_type == "Histogram":
-        fig = px.histogram(df, x=x_column, title=f"Histogram of {x_column}")
+        fig = px.histogram(df, x=x_column, color_continuous_scale=color_scheme, title=f"Histogram of {x_column}")
     elif chart_type == "Box Plot":
-        fig = px.box(df, y=y_column, x=x_column, title=f"Box Plot of {x_column} vs {y_column}")
+        fig = px.box(df, y=y_column, x=x_column, color_continuous_scale=color_scheme, title=f"Box Plot of {x_column} vs {y_column}")
     else:
         st.error("Unsupported chart type selected or missing Z column for 3D chart.")
         return None
     
     fig.update_layout(paper_bgcolor='white', plot_bgcolor='white', font_color='black')
-    st.plotly_chart(fig)
+    if "3D" in chart_type:
+        fig.update_layout(scene=dict(
+            xaxis_title=x_column,
+            yaxis_title=y_column,
+            zaxis_title=z_column
+        ))
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.plotly_chart(fig)
 
 def generate_insights(df):
     if not df.empty:
@@ -80,9 +88,11 @@ def excel_file_analysis():
 
     3. **Select Chart Type:** Choose the type of chart to visualize the relationship between the selected columns.
 
-    4. **Visualize Data:** Click on "Visualize Data" to generate the chart for the selected columns and chart type.
+    4. **Select Color Scheme:** Choose the color scheme for the chart.
 
-    5. **Generate Insights:** Click on "Generate Insights" to view descriptive statistics and other insights from the data.
+    5. **Visualize Data:** Click on "Visualize Data" to generate the chart for the selected columns and chart type.
+
+    6. **Generate Insights:** Click on "Generate Insights" to view descriptive statistics and other insights from the data.
     """)
 
     file_path, file_name = handle_file_upload("Excel", ['xlsx'])
@@ -98,11 +108,12 @@ def excel_file_analysis():
             y_column = st.selectbox("Select Y-axis column", columns)
             z_column = st.selectbox("Select Z-axis column (optional, for 3D charts)", [None] + columns)
             chart_type = st.selectbox("Select chart type", ["Scatter Plot", "Line Chart", "Bar Chart", "Histogram", "Box Plot", "3D Scatter Plot", "3D Line Chart", "3D Surface Plot"])
+            color_scheme = st.selectbox("Select color scheme", px.colors.named_colorscales())
             
             if x_column and y_column and chart_type:
                 if st.button("Visualize Data"):
                     st.write(f"Visualizing {chart_type} for {x_column} vs {y_column}" + (f" vs {z_column}" if z_column else "") + "...")
-                    visualize_data(df, x_column, y_column, z_column, chart_type)
+                    visualize_data(df, x_column, y_column, z_column, chart_type, color_scheme)
                 if st.button("Generate Insights"):
                     st.write("Generating insights...")
                     generate_insights(df)
