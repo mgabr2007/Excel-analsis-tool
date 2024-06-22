@@ -37,15 +37,18 @@ def visualize_data(df, columns):
     for column in columns:
         if pd.api.types.is_numeric_dtype(df[column]):
             sum_value = df[column].sum()
-            fig = px.histogram(df, x=column)
-            fig.update_layout(
-                paper_bgcolor='white', plot_bgcolor='white', font_color='black',
-                title=f"Histogram of {column} (Sum: {sum_value})"
-            )
+            mean_value = df[column].mean()
+            fig = px.histogram(df, x=column, nbins=30, title=f"Histogram of {column} (Sum: {sum_value}, Mean: {mean_value})")
+            fig.update_layout(paper_bgcolor='white', plot_bgcolor='white', font_color='black')
+            st.plotly_chart(fig)
+            figs.append(fig)
+            fig = px.box(df, y=column, title=f"Box plot of {column}")
+            fig.update_layout(paper_bgcolor='white', plot_bgcolor='white', font_color='black')
             st.plotly_chart(fig)
             figs.append(fig)
         else:
-            fig = px.bar(df, x=column, title=f"Bar chart of {column}")
+            value_counts = df[column].value_counts().nlargest(10)  # Show top 10 categories
+            fig = px.bar(value_counts, x=value_counts.index, y=value_counts.values, title=f"Bar chart of {column}")
             fig.update_layout(paper_bgcolor='white', plot_bgcolor='white', font_color='black')
             st.plotly_chart(fig)
             figs.append(fig)
@@ -54,6 +57,10 @@ def visualize_data(df, columns):
 def generate_insights(df):
     if not df.empty:
         st.write("Descriptive Statistics:", df.describe())
+        for column in df.columns:
+            if pd.api.types.is_numeric_dtype(df[column]):
+                st.write(f"Correlation of {column} with other numeric columns:")
+                st.write(df.corr()[column].sort_values(ascending=False))
     else:
         st.write("No data available to generate insights.")
 
