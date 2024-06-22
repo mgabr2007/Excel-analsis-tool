@@ -53,10 +53,10 @@ def visualize_data(df, x_column, y_column, chart_type):
 def generate_insights(df):
     if not df.empty:
         st.write("Descriptive Statistics:", df.describe())
-        for column in df.columns:
-            if pd.api.types.is_numeric_dtype(df[column]):
-                st.write(f"Correlation of {column} with other numeric columns:")
-                st.write(df.corr()[column].sort_values(ascending=False))
+        numeric_df = df.select_dtypes(include=['number'])
+        for column in numeric_df.columns:
+            st.write(f"Correlation of {column} with other numeric columns:")
+            st.write(numeric_df.corr()[column].sort_values(ascending=False))
     else:
         st.write("No data available to generate insights.")
 
