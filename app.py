@@ -46,7 +46,6 @@ def visualize_data(df, columns):
 def generate_insights(df):
     if not df.empty:
         st.write("Descriptive Statistics:", df.describe())
-        # Placeholder for more sophisticated analysis or predictive modeling
 
 # Excel File Analysis Function
 def excel_file_analysis():
@@ -64,8 +63,10 @@ def excel_file_analysis():
 
     file_path, _ = handle_file_upload("Excel", ['xlsx'])
     if file_path:
+        st.write(f"File uploaded: {file_path}")
         df = read_excel(file_path)
         if not df.empty:
+            st.write("File read successfully!")
             selected_columns = st.multiselect("Select columns to display", df.columns.tolist(), default=df.columns.tolist(), key="columns")
             if selected_columns:
                 st.dataframe(df[selected_columns])
