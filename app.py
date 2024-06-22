@@ -1,5 +1,5 @@
-import pandas as pd
 import streamlit as st
+import pandas as pd
 import tempfile
 import os
 import plotly.express as px
@@ -48,39 +48,6 @@ def generate_insights(df):
         st.write("Descriptive Statistics:", df.describe())
         # Placeholder for more sophisticated analysis or predictive modeling
 
-# PDF Export Function
-def export_analysis_to_pdf(ifc_metadata, component_count, figs, author, subject, cover_text):
-    buffer = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-    doc = SimpleDocTemplate(buffer.name, pagesize=letter)
-    styles = getSampleStyleSheet()
-    flowables = []
-
-    # Cover Page
-    flowables.append(Spacer(1, 1 * inch))
-    flowables.append(Paragraph(subject, styles['Title']))
-    flowables.append(Spacer(1, 0.5 * inch))
-    flowables.append(Paragraph(f"Date: {datetime.now().strftime('%Y-%m-%d')}", styles['Normal']))
-    flowables.append(Paragraph(f"Author: {author}", styles['Normal']))
-    flowables.append(Spacer(1, 1 * inch))
-    flowables.append(Paragraph(cover_text, styles['Normal']))
-    flowables.append(Spacer(1, 2 * inch))
-
-    # Adding Images
-    for idx, fig in enumerate(figs):
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmp_file:
-            try:
-                fig.update_layout(paper_bgcolor='white', plot_bgcolor='white', font_color='black')
-                fig.write_image(tmp_file.name, format='png', engine='kaleido')
-                flowables.append(Spacer(1, 0.5 * inch))
-                flowables.append(Paragraph(f"Chart {idx + 1}", styles['Heading2']))
-                flowables.append(Image(tmp_file.name))
-            except Exception as e:
-                logging.error(f"Error exporting chart to image: {e}")
-                st.error(f"Error exporting chart to image: {e}")
-
-    doc.build(flowables)
-    return buffer.name
-
 # Excel File Analysis Function
 def excel_file_analysis():
     st.write("""
@@ -107,8 +74,14 @@ def excel_file_analysis():
                     figs = visualize_data(df, selected_columns)
                 if st.button("Generate Insights", key="insights"):
                     generate_insights(df)
-                if figs and st.button("Export Analysis as PDF"):
-                    pdf_file_path = export_analysis_to_pdf({"Name": "Excel Data Analysis"}, {}, figs, "Author Name", "Excel Data Analysis Report", "This report contains the analysis of Excel data.")
-                    with open(pdf_file_path, 'rb') as f:
-                        st.download_button('Download PDF Report', f, 'excel_analysis.pdf')
             os.remove(file_path)
+
+# Main Function
+def main():
+    st.title("Excel File Analysis Tool")
+    st.sidebar.title("Navigation")
+    if st.sidebar.button("Analyze Excel File"):
+        excel_file_analysis()
+
+if __name__ == "__main__":
+    main()
