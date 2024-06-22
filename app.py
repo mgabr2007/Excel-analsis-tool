@@ -32,27 +32,23 @@ def read_excel(file):
         return pd.DataFrame()
 
 # Visualization Functions
-def visualize_data(df, columns):
-    figs = []
-    for column in columns:
-        if pd.api.types.is_numeric_dtype(df[column]):
-            sum_value = df[column].sum()
-            mean_value = df[column].mean()
-            fig = px.histogram(df, x=column, nbins=30, title=f"Histogram of {column} (Sum: {sum_value}, Mean: {mean_value})")
-            fig.update_layout(paper_bgcolor='white', plot_bgcolor='white', font_color='black')
-            st.plotly_chart(fig)
-            figs.append(fig)
-            fig = px.box(df, y=column, title=f"Box plot of {column}")
-            fig.update_layout(paper_bgcolor='white', plot_bgcolor='white', font_color='black')
-            st.plotly_chart(fig)
-            figs.append(fig)
-        else:
-            value_counts = df[column].value_counts().nlargest(10)  # Show top 10 categories
-            fig = px.bar(value_counts, x=value_counts.index, y=value_counts.values, title=f"Bar chart of {column}")
-            fig.update_layout(paper_bgcolor='white', plot_bgcolor='white', font_color='black')
-            st.plotly_chart(fig)
-            figs.append(fig)
-    return figs
+def visualize_data(df, x_column, y_column, chart_type):
+    if chart_type == "Scatter Plot":
+        fig = px.scatter(df, x=x_column, y=y_column, title=f"Scatter Plot of {x_column} vs {y_column}")
+    elif chart_type == "Line Chart":
+        fig = px.line(df, x=x_column, y=y_column, title=f"Line Chart of {x_column} vs {y_column}")
+    elif chart_type == "Bar Chart":
+        fig = px.bar(df, x=x_column, y=y_column, title=f"Bar Chart of {x_column} vs {y_column}")
+    elif chart_type == "Histogram":
+        fig = px.histogram(df, x=x_column, title=f"Histogram of {x_column}")
+    elif chart_type == "Box Plot":
+        fig = px.box(df, y=y_column, x=x_column, title=f"Box Plot of {x_column} vs {y_column}")
+    else:
+        st.error("Unsupported chart type selected.")
+        return None
+    
+    fig.update_layout(paper_bgcolor='white', plot_bgcolor='white', font_color='black')
+    st.plotly_chart(fig)
 
 def generate_insights(df):
     if not df.empty:
@@ -71,11 +67,13 @@ def excel_file_analysis():
 
     1. **Upload an Excel File:** Click on the "Choose an Excel file" button to upload an Excel spreadsheet.
 
-    2. **Select Columns to Display:** Choose the columns you want to display from the uploaded Excel file.
+    2. **Select Columns for Analysis:** Choose the columns you want to use for analysis from the uploaded Excel file.
 
-    3. **Visualize Data:** Click on "Visualize Data" to generate charts for the selected columns.
+    3. **Select Chart Type:** Choose the type of chart to visualize the relationship between the selected columns.
 
-    4. **Generate Insights:** Click on "Generate Insights" to view descriptive statistics and other insights from the data.
+    4. **Visualize Data:** Click on "Visualize Data" to generate the chart for the selected columns and chart type.
+
+    5. **Generate Insights:** Click on "Generate Insights" to view descriptive statistics and other insights from the data.
     """)
 
     file_path, file_name = handle_file_upload("Excel", ['xlsx'])
@@ -85,18 +83,21 @@ def excel_file_analysis():
         if not df.empty:
             st.write("File read successfully! Here is a preview of the data:")
             st.dataframe(df.head())
-            selected_columns = st.multiselect("Select columns to display", df.columns.tolist(), default=df.columns.tolist(), key="columns")
-            st.write(f"Selected columns: {selected_columns}")
-            if selected_columns:
-                st.dataframe(df[selected_columns])
+            
+            columns = df.columns.tolist()
+            x_column = st.selectbox("Select X-axis column", columns)
+            y_column = st.selectbox("Select Y-axis column", columns)
+            chart_type = st.selectbox("Select chart type", ["Scatter Plot", "Line Chart", "Bar Chart", "Histogram", "Box Plot"])
+            
+            if x_column and y_column and chart_type:
                 if st.button("Visualize Data"):
-                    st.write("Visualizing data...")
-                    visualize_data(df, selected_columns)
+                    st.write(f"Visualizing {chart_type} for {x_column} vs {y_column}...")
+                    visualize_data(df, x_column, y_column, chart_type)
                 if st.button("Generate Insights"):
                     st.write("Generating insights...")
                     generate_insights(df)
             else:
-                st.warning("Please select at least one column to display.")
+                st.warning("Please select columns and chart type for visualization.")
         else:
             st.error("The uploaded file is empty or could not be read.")
         os.remove(file_path)
