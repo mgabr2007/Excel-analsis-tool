@@ -95,12 +95,7 @@ def excel_file_analysis():
 # Main Function
 def main():
     st.title("Excel File Analysis Tool")
-    st.sidebar.title("Navigation")
-    st.sidebar.write("Click the button below to start analyzing Excel files.")
-    if st.sidebar.button("Analyze Excel File"):
-        excel_file_analysis()
-    else:
-        st.write("Use the sidebar to navigate and start the analysis.")
+    excel_file_analysis()
 
 if __name__ == "__main__":
     main()
