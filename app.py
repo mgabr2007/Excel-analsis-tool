@@ -40,15 +40,15 @@ def visualize_data(df, x_column, y_column, z_column, chart_type, color_scheme):
     elif chart_type == "3D Surface Plot" and z_column:
         fig = px.surface(df, x=x_column, y=y_column, z=z_column, color_continuous_scale=color_scheme, title=f"3D Surface Plot of {x_column} vs {y_column} vs {z_column}")
     elif chart_type == "Scatter Plot":
-        fig = px.scatter(df, x=x_column, y=y_column, color=x_column, color_continuous_scale=color_scheme, title=f"Scatter Plot of {x_column} vs {y_column}")
+        fig = px.scatter(df, x=x_column, y=y_column, color_continuous_scale=color_scheme, title=f"Scatter Plot of {x_column} vs {y_column}")
     elif chart_type == "Line Chart":
-        fig = px.line(df, x=x_column, y=y_column, title=f"Line Chart of {x_column} vs {y_column}", color_discrete_sequence=[color_scheme])
+        fig = px.line(df, x=x_column, y=y_column, title=f"Line Chart of {x_column} vs {y_column}")
     elif chart_type == "Bar Chart":
-        fig = px.bar(df, x=x_column, y=y_column, title=f"Bar Chart of {x_column} vs {y_column}", color_discrete_sequence=[color_scheme])
+        fig = px.bar(df, x=x_column, y=y_column, title=f"Bar Chart of {x_column} vs {y_column}")
     elif chart_type == "Histogram":
-        fig = px.histogram(df, x=x_column, title=f"Histogram of {x_column}", color_discrete_sequence=[color_scheme])
+        fig = px.histogram(df, x=x_column, title=f"Histogram of {x_column}")
     elif chart_type == "Box Plot":
-        fig = px.box(df, y=y_column, x=x_column, title=f"Box Plot of {x_column} vs {y_column}", color_discrete_sequence=[color_scheme])
+        fig = px.box(df, y=y_column, x=x_column, title=f"Box Plot of {x_column} vs {y_column}")
     else:
         st.error("Unsupported chart type selected or missing Z column for 3D chart.")
         return None
