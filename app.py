@@ -75,11 +75,14 @@ def excel_file_analysis():
             st.write("File read successfully! Here is a preview of the data:")
             st.dataframe(df.head())
             selected_columns = st.multiselect("Select columns to display", df.columns.tolist(), default=df.columns.tolist(), key="columns")
+            st.write(f"Selected columns: {selected_columns}")
             if selected_columns:
                 st.dataframe(df[selected_columns])
-                if st.button("Visualize Data", key="visualize"):
+                if st.button("Visualize Data"):
+                    st.write("Visualizing data...")
                     visualize_data(df, selected_columns)
-                if st.button("Generate Insights", key="insights"):
+                if st.button("Generate Insights"):
+                    st.write("Generating insights...")
                     generate_insights(df)
             else:
                 st.warning("Please select at least one column to display.")
