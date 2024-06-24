@@ -76,7 +76,9 @@ def excel_file_analysis():
                     generate_insights(df_selected)
 
                 st.write("### Interactive Visualization")
-                pyg.walk(df_selected)
+                # Initialize Pygwalker interface and render as HTML in Streamlit
+                walker_html = pyg.walk(df_selected)
+                st.components.v1.html(walker_html.to_html(), height=600, scrolling=True)
             else:
                 st.warning("Please select columns for analysis.")
         else:
