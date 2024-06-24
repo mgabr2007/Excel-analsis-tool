@@ -6,7 +6,7 @@ import logging
 import pygwalker as pyg
 
 # Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname=s - %(message)s')
 
 # Utility Functions
 def handle_file_upload(upload_type, file_types):
@@ -49,21 +49,23 @@ def excel_file_analysis():
     st.write("""
     ### Instructions for Analyzing Excel Files:
 
-    1. **Upload an Excel File:** Click on the "Choose an Excel file" button to upload an Excel spreadsheet.
+    1. **Upload an Excel File**: Click on the "Choose an Excel file" button to upload an Excel spreadsheet in `.xlsx` format.
 
-    2. **Select Columns for Analysis:** Choose the columns you want to use for analysis from the uploaded Excel file.
+    2. **Preview Data**: After uploading, a preview of the first few rows of the file will be displayed. This helps you confirm that the correct file has been uploaded.
 
-    3. **Generate Insights:** Click on "Generate Insights" to view descriptive statistics and other insights from the data.
+    3. **Select Columns for Analysis**: Choose the columns you want to use for analysis from the uploaded Excel file. Use the multiselect dropdown to select multiple columns.
 
-    4. **Visualize Data:** Use Pygwalker below to create interactive visualizations.
+    4. **Generate Insights**: Click on the "Generate Insights" button to view descriptive statistics and other insights from the data. This includes basic statistics and a correlation matrix for numeric columns.
+
+    5. **Visualize Data**: Below the insights, use Pygwalker to create interactive visualizations. These visualizations are highly customizable and allow you to explore the data in depth.
     """)
 
     file_path, file_name = handle_file_upload("Excel", ['xlsx'])
     if file_path:
-        st.write(f"File uploaded: {file_name}")
+        st.write(f"### File uploaded: {file_name}")
         df = read_excel(file_path)
         if not df.empty:
-            st.write("File read successfully! Here is a preview of the data:")
+            st.write("#### File read successfully! Here is a preview of the data:")
             st.dataframe(df.head())
 
             columns = df.columns.tolist()
