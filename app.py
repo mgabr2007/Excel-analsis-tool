@@ -76,7 +76,7 @@ def excel_file_analysis():
                     generate_insights(df_selected)
 
                 st.write("### Interactive Visualization")
-                pyg.walk(df_selected, st)
+                pyg.walk(df_selected)
             else:
                 st.warning("Please select columns for analysis.")
         else:
