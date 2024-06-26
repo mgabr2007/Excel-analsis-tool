@@ -33,7 +33,8 @@ translations = {
         "descriptive_statistics": "Descriptive Statistics:",
         "correlation_matrix": "Correlation Matrix:",
         "no_numeric_columns": "No numeric columns available for correlation analysis.",
-        "no_data_available": "No data available to generate insights."
+        "no_data_available": "No data available to generate insights.",
+        "sidebar_instructions": "### Instructions:\n1. Select your preferred language.\n2. Follow the instructions on the main page to upload and analyze your Excel file."
     },
     "ar": {
         "title": "أداة تحليل ملفات Excel",
@@ -55,7 +56,8 @@ translations = {
         "descriptive_statistics": "الإحصاءات الوصفية:",
         "correlation_matrix": "مصفوفة الارتباط:",
         "no_numeric_columns": "لا توجد أعمدة رقمية متاحة لتحليل الارتباط.",
-        "no_data_available": "لا توجد بيانات متاحة لتوليد الإحصاءات."
+        "no_data_available": "لا توجد بيانات متاحة لتوليد الإحصاءات.",
+        "sidebar_instructions": "### تعليمات:\n1. اختر لغتك المفضلة.\n2. اتبع التعليمات في الصفحة الرئيسية لتحميل وتحليل ملف Excel الخاص بك."
     },
     "fr": {
         "title": "Outil d'Analyse de Fichier Excel",
@@ -77,7 +79,8 @@ translations = {
         "descriptive_statistics": "Statistiques Descriptives:",
         "correlation_matrix": "Matrice de Corrélation:",
         "no_numeric_columns": "Aucune colonne numérique disponible pour l'analyse de corrélation.",
-        "no_data_available": "Aucune donnée disponible pour générer des informations."
+        "no_data_available": "Aucune donnée disponible pour générer des informations.",
+        "sidebar_instructions": "### Instructions:\n1. Sélectionnez votre langue préférée.\n2. Suivez les instructions sur la page principale pour télécharger et analyser votre fichier Excel."
     },
     "de": {
         "title": "Excel-Dateianalysetool",
@@ -99,7 +102,8 @@ translations = {
         "descriptive_statistics": "Beschreibende Statistiken:",
         "correlation_matrix": "Korrelationsmatrix:",
         "no_numeric_columns": "Keine numerischen Spalten zur Korrelationsanalyse verfügbar.",
-        "no_data_available": "Keine Daten verfügbar, um Erkenntnisse zu generieren."
+        "no_data_available": "Keine Daten verfügbar, um Erkenntnisse zu generieren.",
+        "sidebar_instructions": "### Anweisungen:\n1. Wählen Sie Ihre bevorzugte Sprache.\n2. Befolgen Sie die Anweisungen auf der Hauptseite, um Ihre Excel-Datei hochzuladen und zu analysieren."
     }
 }
 
@@ -187,7 +191,7 @@ def excel_file_analysis(language):
 def main():
     # Language selection with flags
     language = st.sidebar.radio(
-        "Select Language",
+        "🌐 Select Language",
         options=["en", "ar", "fr", "de"],
         format_func=lambda lang: {
             "en": "English 🇺🇸",
@@ -198,11 +202,7 @@ def main():
     )
 
     # Sidebar instructions
-    st.sidebar.write("### Instructions:")
-    st.sidebar.write("""
-        1. Select your preferred language.
-        2. Follow the instructions on the main page to upload and analyze your Excel file.
-    """)
+    st.sidebar.markdown(translate_text(language, "sidebar_instructions"))
 
     st.title(translate_text(language, "title"))
     excel_file_analysis(language)
