@@ -194,10 +194,10 @@ def main():
         "🌐 Select Language",
         options=["en", "ar", "fr", "de"],
         format_func=lambda lang: {
-            "en": "English 🇺🇸",
-            "ar": "Arabic 🇸🇦",
-            "fr": "French 🇫🇷",
-            "de": "German 🇩🇪"
+            "en": "English 🏳️",
+            "ar": "Arabic 🏳️",
+            "fr": "French 🏳️",
+            "de": "German 🏳️"
         }[lang]
     )
 
