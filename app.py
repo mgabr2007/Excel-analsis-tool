@@ -185,9 +185,25 @@ def excel_file_analysis(language):
 
 # Main Function
 def main():
-    # Language selection
-    language = st.sidebar.selectbox("Select Language", ["en", "ar", "fr", "de"])
-    
+    # Language selection with flags
+    language = st.sidebar.radio(
+        "Select Language",
+        options=["en", "ar", "fr", "de"],
+        format_func=lambda lang: {
+            "en": "English 🇺🇸",
+            "ar": "Arabic 🇸🇦",
+            "fr": "French 🇫🇷",
+            "de": "German 🇩🇪"
+        }[lang]
+    )
+
+    # Sidebar instructions
+    st.sidebar.write("### Instructions:")
+    st.sidebar.write("""
+        1. Select your preferred language.
+        2. Follow the instructions on the main page to upload and analyze your Excel file.
+    """)
+
     st.title(translate_text(language, "title"))
     excel_file_analysis(language)
 
