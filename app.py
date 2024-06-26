@@ -6,7 +6,10 @@ import logging
 import pygwalker as pyg
 
 # Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname=s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Set Streamlit page configuration to wide layout
+st.set_page_config(layout="wide")
 
 # Utility Functions
 def handle_file_upload(upload_type, file_types):
