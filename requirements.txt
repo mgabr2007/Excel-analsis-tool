@@ -5,3 +5,4 @@ plotly
 reportlab
 logging
 pygwalker
+scikit-learn
