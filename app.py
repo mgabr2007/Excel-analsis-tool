@@ -4,10 +4,10 @@ import tempfile
 import os
 import logging
 import pygwalker as pyg
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.preprocessing import StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import mean_squared_error, r2_score
@@ -28,15 +28,15 @@ translations = {
         "instruction_3": "3. **Select Columns for Analysis**: Choose the columns you want to use for analysis from the uploaded Excel file. Use the multiselect dropdown to select multiple columns.",
         "instruction_4": "4. **Generate Insights**: Click on the \"Generate Insights\" button to view descriptive statistics and other insights from the data. This includes basic statistics and a correlation matrix for numeric columns.",
         "instruction_5": "5. **Visualize Data**: Below the insights, use Pygwalker to create interactive visualizations. These visualizations are highly customizable and allow you to explore the data in depth.",
-        "instruction_6": "6. **Train a Machine Learning Model**: Select features and a target column to train a simple linear regression model.",
+        "instruction_6": "6. **Train a Machine Learning Model**: Select features and a target column to train a simple linear regression or decision tree regression model.",
         "ml_instruction": """
         ### What does the Machine Learning model do?
 
-        The machine learning model implemented in this tool is a simple linear regression model. Here’s what it does:
+        The machine learning model implemented in this tool is a simple linear regression or decision tree regression model. Here’s what it does:
 
         1. **Feature Selection**: Choose one or more columns from your dataset to use as features (independent variables) for the model.
         2. **Target Selection**: Choose one column from your dataset to use as the target (dependent variable) for the model.
-        3. **Train the Model**: The tool splits the data into training and testing sets, trains a linear regression model on the training data, and evaluates it on the testing data.
+        3. **Train the Model**: The tool splits the data into training and testing sets, trains a linear regression or decision tree regression model on the training data, and evaluates it on the testing data.
         4. **Model Performance**: The tool provides the Mean Squared Error (MSE) and the R² Score to evaluate the model's performance.
         """,
         "choose_file": "Choose a file",
@@ -60,7 +60,14 @@ translations = {
         "ml_model_performance": "Model Performance",
         "ml_mse": "Mean Squared Error",
         "ml_r2": "R² Score",
-        "ml_model_choice": "Choose a Machine Learning Model"
+        "ml_model_choice": "Choose a Machine Learning Model",
+        "ml_performance_explanation": """
+        ### Model Performance Explanation
+
+        **Mean Squared Error (MSE)**: This is the average of the squared differences between the actual and predicted values. A lower MSE indicates a better fit.
+
+        **R² Score**: This score represents the proportion of the variance in the dependent variable that is predictable from the independent variables. An R² score close to 1 indicates a good fit.
+        """
     },
     "ar": {
         "title": "أداة تحليل ملفات Excel",
@@ -70,15 +77,15 @@ translations = {
         "instruction_3": "3. **اختر الأعمدة للتحليل**: اختر الأعمدة التي تريد استخدامها للتحليل من ملف Excel الذي تم تحميله. استخدم القائمة المنسدلة المتعددة لتحديد أعمدة متعددة.",
         "instruction_4": "4. **توليد الإحصاءات**: انقر فوق الزر \"توليد الإحصاءات\" لعرض الإحصاءات الوصفية والرؤى الأخرى من البيانات. يتضمن ذلك الإحصاءات الأساسية ومصفوفة الارتباط للأعمدة الرقمية.",
         "instruction_5": "5. **تصور البيانات**: أسفل الإحصاءات، استخدم Pygwalker لإنشاء تصورات تفاعلية. هذه التصورات قابلة للتخصيص بدرجة كبيرة وتتيح لك استكشاف البيانات بعمق.",
-        "instruction_6": "6. **تدريب نموذج التعلم الآلي**: اختر الميزات وعمود الهدف لتدريب نموذج الانحدار الخطي البسيط.",
+        "instruction_6": "6. **تدريب نموذج التعلم الآلي**: اختر الميزات وعمود الهدف لتدريب نموذج الانحدار الخطي البسيط أو نموذج شجرة القرار.",
         "ml_instruction": """
         ### ماذا يفعل نموذج التعلم الآلي؟
 
-        النموذج المطبق في هذه الأداة هو نموذج انحدار خطي بسيط. إليك ما يفعله:
+        النموذج المطبق في هذه الأداة هو نموذج انحدار خطي بسيط أو نموذج شجرة القرار. إليك ما يفعله:
 
         1. **اختيار الميزات**: اختر عمودًا أو أكثر من بياناتك لاستخدامها كميزات (متغيرات مستقلة) للنموذج.
         2. **اختيار الهدف**: اختر عمودًا واحدًا من بياناتك لاستخدامه كهدف (متغير تابع) للنموذج.
-        3. **تدريب النموذج**: تقوم الأداة بتقسيم البيانات إلى مجموعات تدريب واختبار، وتدريب نموذج الانحدار الخطي على بيانات التدريب، وتقييمه على بيانات الاختبار.
+        3. **تدريب النموذج**: تقوم الأداة بتقسيم البيانات إلى مجموعات تدريب واختبار، وتدريب نموذج الانحدار الخطي أو نموذج شجرة القرار على بيانات التدريب، وتقييمه على بيانات الاختبار.
         4. **أداء النموذج**: توفر الأداة متوسط ​​الخطأ التربيعي (MSE) ودرجة R² لتقييم أداء النموذج.
         """,
         "choose_file": "اختر ملفًا",
@@ -102,7 +109,14 @@ translations = {
         "ml_model_performance": "أداء النموذج",
         "ml_mse": "متوسط ​​الخطأ التربيعي",
         "ml_r2": "درجة R²",
-        "ml_model_choice": "اختر نموذج التعلم الآلي"
+        "ml_model_choice": "اختر نموذج التعلم الآلي",
+        "ml_performance_explanation": """
+        ### شرح أداء النموذج
+
+        **متوسط ​​الخطأ التربيعي (MSE)**: هذا هو متوسط ​​الفروق المربعة بين القيم الفعلية والقيم المتوقعة. يشير انخفاض MSE إلى مطابقة أفضل.
+
+        **درجة R²**: يمثل هذا الدرجة نسبة التباين في المتغير التابع التي يمكن التنبؤ بها من المتغيرات المستقلة. يشير اقتراب درجة R² من 1 إلى مطابقة جيدة.
+        """
     },
     "fr": {
         "title": "Outil d'Analyse de Fichier Excel",
@@ -112,15 +126,15 @@ translations = {
         "instruction_3": "3. **Sélectionner les Colonnes pour l'Analyse**: Choisissez les colonnes que vous souhaitez utiliser pour l'analyse à partir du fichier Excel téléchargé. Utilisez la liste déroulante multisélection pour sélectionner plusieurs colonnes.",
         "instruction_4": "4. **Générer des Informations**: Cliquez sur le bouton \"Générer des Informations\" pour afficher les statistiques descriptives et autres informations sur les données. Cela inclut les statistiques de base et une matrice de corrélation pour les colonnes numériques.",
         "instruction_5": "5. **Visualiser les Données**: Sous les informations, utilisez Pygwalker pour créer des visualisations interactives. Ces visualisations sont hautement personnalisables et vous permettent d'explorer les données en profondeur.",
-        "instruction_6": "6. **Former un Modèle de Machine Learning**: Sélectionnez les caractéristiques et une colonne cible pour former un modèle de régression linéaire simple.",
+        "instruction_6": "6. **Former un Modèle de Machine Learning**: Sélectionnez les caractéristiques et une colonne cible pour former un modèle de régression linéaire simple ou un modèle d'arbre de décision.",
         "ml_instruction": """
         ### Que fait le modèle de Machine Learning ?
 
-        Le modèle de machine learning implémenté dans cet outil est un simple modèle de régression linéaire. Voici ce qu'il fait :
+        Le modèle de machine learning implémenté dans cet outil est un simple modèle de régression linéaire ou un modèle d'arbre de décision. Voici ce qu'il fait :
 
         1. **Sélection des caractéristiques**: Choisissez une ou plusieurs colonnes de votre jeu de données à utiliser comme caractéristiques (variables indépendantes) pour le modèle.
         2. **Sélection de la cible**: Choisissez une colonne de votre jeu de données à utiliser comme cible (variable dépendante) pour le modèle.
-        3. **Entraîner le modèle**: L'outil divise les données en ensembles d'entraînement et de test, entraîne un modèle de régression linéaire sur les données d'entraînement et l'évalue sur les données de test.
+        3. **Entraîner le modèle**: L'outil divise les données en ensembles d'entraînement et de test, entraîne un modèle de régression linéaire ou un modèle d'arbre de décision sur les données d'entraînement et l'évalue sur les données de test.
         4. **Performance du modèle**: L'outil fournit l'erreur quadratique moyenne (MSE) et le score R² pour évaluer les performances du modèle.
         """,
         "choose_file": "Choisissez un fichier",
@@ -144,7 +158,14 @@ translations = {
         "ml_model_performance": "Performance du Modèle",
         "ml_mse": "Erreur Quadratique Moyenne",
         "ml_r2": "Score R²",
-        "ml_model_choice": "Choisissez un modèle de Machine Learning"
+        "ml_model_choice": "Choisissez un modèle de Machine Learning",
+        "ml_performance_explanation": """
+        ### Explication de la Performance du Modèle
+
+        **Erreur Quadratique Moyenne (MSE)**: Il s'agit de la moyenne des différences quadratiques entre les valeurs réelles et prévues. Une MSE plus faible indique un meilleur ajustement.
+
+        **Score R²**: Ce score représente la proportion de la variance dans la variable dépendante qui est prévisible à partir des variables indépendantes. Un score R² proche de 1 indique un bon ajustement.
+        """
     },
     "de": {
         "title": "Excel-Dateianalysetool",
@@ -154,15 +175,15 @@ translations = {
         "instruction_3": "3. **Wählen Sie Spalten zur Analyse aus**: Wählen Sie die Spalten aus, die Sie aus der hochgeladenen Excel-Datei zur Analyse verwenden möchten. Verwenden Sie das Dropdown-Menü zur Mehrfachauswahl, um mehrere Spalten auszuwählen.",
         "instruction_4": "4. **Erzeugen Sie Erkenntnisse**: Klicken Sie auf die Schaltfläche \"Erkenntnisse generieren\", um beschreibende Statistiken und andere Erkenntnisse aus den Daten anzuzeigen. Dies umfasst grundlegende Statistiken und eine Korrelationsmatrix für numerische Spalten.",
         "instruction_5": "5. **Daten visualisieren**: Unterhalb der Erkenntnisse verwenden Sie Pygwalker, um interaktive Visualisierungen zu erstellen. Diese Visualisierungen sind hochgradig anpassbar und ermöglichen es Ihnen, die Daten im Detail zu erkunden.",
-        "instruction_6": "6. **Trainieren Sie ein Machine Learning Modell**: Wählen Sie Funktionen und eine Zielspalte, um ein einfaches lineares Regressionsmodell zu trainieren.",
+        "instruction_6": "6. **Trainieren Sie ein Machine Learning Modell**: Wählen Sie Funktionen und eine Zielspalte, um ein einfaches lineares Regressionsmodell oder ein Entscheidungsbaum-Regressionsmodell zu trainieren.",
         "ml_instruction": """
         ### Was macht das Machine Learning Modell?
 
-        Das Machine Learning Modell, das in diesem Tool implementiert ist, ist ein einfaches lineares Regressionsmodell. Hier ist, was es tut:
+        Das Machine Learning Modell, das in diesem Tool implementiert ist, ist ein einfaches lineares Regressionsmodell oder ein Entscheidungsbaum-Regressionsmodell. Hier ist, was es tut:
 
         1. **Merkmalsauswahl**: Wählen Sie eine oder mehrere Spalten aus Ihrem Datensatz aus, die als Merkmale (unabhängige Variablen) für das Modell verwendet werden sollen.
         2. **Zielauswahl**: Wählen Sie eine Spalte aus Ihrem Datensatz aus, die als Ziel (abhängige Variable) für das Modell verwendet werden soll.
-        3. **Modell trainieren**: Das Tool teilt die Daten in Trainings- und Testmengen auf, trainiert ein lineares Regressionsmodell mit den Trainingsdaten und bewertet es mit den Testdaten.
+        3. **Modell trainieren**: Das Tool teilt die Daten in Trainings- und Testmengen auf, trainiert ein lineares Regressionsmodell oder ein Entscheidungsbaum-Regressionsmodell mit den Trainingsdaten und bewertet es mit den Testdaten.
         4. **Modellleistung**: Das Tool liefert den mittleren quadratischen Fehler (MSE) und den R²-Score zur Bewertung der Modellleistung.
         """,
         "choose_file": "Wählen Sie eine Datei",
@@ -186,7 +207,14 @@ translations = {
         "ml_model_performance": "Modellleistung",
         "ml_mse": "Mittlerer quadratischer Fehler",
         "ml_r2": "R²-Score",
-        "ml_model_choice": "Wählen Sie ein Machine Learning Modell"
+        "ml_model_choice": "Wählen Sie ein Machine Learning Modell",
+        "ml_performance_explanation": """
+        ### Erklärung der Modellleistung
+
+        **Mittlerer quadratischer Fehler (MSE)**: Dies ist der Durchschnitt der quadrierten Unterschiede zwischen den tatsächlichen und vorhergesagten Werten. Ein niedrigerer MSE weist auf eine bessere Übereinstimmung hin.
+
+        **R²-Score**: Dieser Score gibt den Anteil der Varianz in der abhängigen Variable an, der durch die unabhängigen Variablen vorhergesagt werden kann. Ein R²-Score nahe 1 weist auf eine gute Übereinstimmung hin.
+        """
     }
 }
 
@@ -276,6 +304,8 @@ def train_ml_model(df, language):
         st.write(f"### {translate_text(language, 'ml_model_performance')}")
         st.write(f"{translate_text(language, 'ml_mse')}: {mse}")
         st.write(f"{translate_text(language, 'ml_r2')}: {r2}")
+
+        st.write(translate_text(language, "ml_performance_explanation"))
 
 # Excel File Analysis Function
 def excel_file_analysis(language):
