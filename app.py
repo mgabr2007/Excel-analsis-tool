@@ -4,6 +4,9 @@ import tempfile
 import os
 import logging
 import pygwalker as pyg
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -21,6 +24,7 @@ translations = {
         "instruction_3": "3. **Select Columns for Analysis**: Choose the columns you want to use for analysis from the uploaded Excel file. Use the multiselect dropdown to select multiple columns.",
         "instruction_4": "4. **Generate Insights**: Click on the \"Generate Insights\" button to view descriptive statistics and other insights from the data. This includes basic statistics and a correlation matrix for numeric columns.",
         "instruction_5": "5. **Visualize Data**: Below the insights, use Pygwalker to create interactive visualizations. These visualizations are highly customizable and allow you to explore the data in depth.",
+        "instruction_6": "6. **Train a Machine Learning Model**: Select features and a target column to train a simple linear regression model.",
         "choose_file": "Choose a file",
         "file_uploaded": "File uploaded:",
         "file_read_success": "File read successfully! Here is a preview of the data:",
@@ -34,7 +38,14 @@ translations = {
         "correlation_matrix": "Correlation Matrix:",
         "no_numeric_columns": "No numeric columns available for correlation analysis.",
         "no_data_available": "No data available to generate insights.",
-        "sidebar_instructions": "### Instructions:\n1. Select your preferred language.\n2. Follow the instructions on the main page to upload and analyze your Excel file."
+        "sidebar_instructions": "### Instructions:\n1. Select your preferred language.\n2. Follow the instructions on the main page to upload and analyze your Excel file.",
+        "ml_section_title": "Train a Machine Learning Model",
+        "ml_select_features": "Select feature columns",
+        "ml_select_target": "Select target column",
+        "ml_train_button": "Train Model",
+        "ml_model_performance": "Model Performance",
+        "ml_mse": "Mean Squared Error",
+        "ml_r2": "R² Score"
     },
     "ar": {
         "title": "أداة تحليل ملفات Excel",
@@ -44,6 +55,7 @@ translations = {
         "instruction_3": "3. **اختر الأعمدة للتحليل**: اختر الأعمدة التي تريد استخدامها للتحليل من ملف Excel الذي تم تحميله. استخدم القائمة المنسدلة المتعددة لتحديد أعمدة متعددة.",
         "instruction_4": "4. **توليد الإحصاءات**: انقر فوق الزر \"توليد الإحصاءات\" لعرض الإحصاءات الوصفية والرؤى الأخرى من البيانات. يتضمن ذلك الإحصاءات الأساسية ومصفوفة الارتباط للأعمدة الرقمية.",
         "instruction_5": "5. **تصور البيانات**: أسفل الإحصاءات، استخدم Pygwalker لإنشاء تصورات تفاعلية. هذه التصورات قابلة للتخصيص بدرجة كبيرة وتتيح لك استكشاف البيانات بعمق.",
+        "instruction_6": "6. **تدريب نموذج التعلم الآلي**: اختر الميزات وعمود الهدف لتدريب نموذج الانحدار الخطي البسيط.",
         "choose_file": "اختر ملفًا",
         "file_uploaded": "تم تحميل الملف:",
         "file_read_success": "تم قراءة الملف بنجاح! فيما يلي معاينة للبيانات:",
@@ -57,7 +69,14 @@ translations = {
         "correlation_matrix": "مصفوفة الارتباط:",
         "no_numeric_columns": "لا توجد أعمدة رقمية متاحة لتحليل الارتباط.",
         "no_data_available": "لا توجد بيانات متاحة لتوليد الإحصاءات.",
-        "sidebar_instructions": "### تعليمات:\n1. اختر لغتك المفضلة.\n2. اتبع التعليمات في الصفحة الرئيسية لتحميل وتحليل ملف Excel الخاص بك."
+        "sidebar_instructions": "### تعليمات:\n1. اختر لغتك المفضلة.\n2. اتبع التعليمات في الصفحة الرئيسية لتحميل وتحليل ملف Excel الخاص بك.",
+        "ml_section_title": "تدريب نموذج التعلم الآلي",
+        "ml_select_features": "اختر أعمدة الميزات",
+        "ml_select_target": "اختر عمود الهدف",
+        "ml_train_button": "تدريب النموذج",
+        "ml_model_performance": "أداء النموذج",
+        "ml_mse": "متوسط ​​الخطأ التربيعي",
+        "ml_r2": "درجة R²"
     },
     "fr": {
         "title": "Outil d'Analyse de Fichier Excel",
@@ -67,6 +86,7 @@ translations = {
         "instruction_3": "3. **Sélectionner les Colonnes pour l'Analyse**: Choisissez les colonnes que vous souhaitez utiliser pour l'analyse à partir du fichier Excel téléchargé. Utilisez la liste déroulante multisélection pour sélectionner plusieurs colonnes.",
         "instruction_4": "4. **Générer des Informations**: Cliquez sur le bouton \"Générer des Informations\" pour afficher les statistiques descriptives et autres informations sur les données. Cela inclut les statistiques de base et une matrice de corrélation pour les colonnes numériques.",
         "instruction_5": "5. **Visualiser les Données**: Sous les informations, utilisez Pygwalker pour créer des visualisations interactives. Ces visualisations sont hautement personnalisables et vous permettent d'explorer les données en profondeur.",
+        "instruction_6": "6. **Former un Modèle de Machine Learning**: Sélectionnez les caractéristiques et une colonne cible pour former un modèle de régression linéaire simple.",
         "choose_file": "Choisissez un fichier",
         "file_uploaded": "Fichier téléchargé:",
         "file_read_success": "Fichier lu avec succès! Voici un aperçu des données:",
@@ -80,7 +100,14 @@ translations = {
         "correlation_matrix": "Matrice de Corrélation:",
         "no_numeric_columns": "Aucune colonne numérique disponible pour l'analyse de corrélation.",
         "no_data_available": "Aucune donnée disponible pour générer des informations.",
-        "sidebar_instructions": "### Instructions:\n1. Sélectionnez votre langue préférée.\n2. Suivez les instructions sur la page principale pour télécharger et analyser votre fichier Excel."
+        "sidebar_instructions": "### Instructions:\n1. Sélectionnez votre langue préférée.\n2. Suivez les instructions sur la page principale pour télécharger et analyser votre fichier Excel.",
+        "ml_section_title": "Former un Modèle de Machine Learning",
+        "ml_select_features": "Sélectionnez les colonnes de caractéristiques",
+        "ml_select_target": "Sélectionnez la colonne cible",
+        "ml_train_button": "Former le Modèle",
+        "ml_model_performance": "Performance du Modèle",
+        "ml_mse": "Erreur Quadratique Moyenne",
+        "ml_r2": "Score R²"
     },
     "de": {
         "title": "Excel-Dateianalysetool",
@@ -90,6 +117,7 @@ translations = {
         "instruction_3": "3. **Wählen Sie Spalten zur Analyse aus**: Wählen Sie die Spalten aus, die Sie aus der hochgeladenen Excel-Datei zur Analyse verwenden möchten. Verwenden Sie das Dropdown-Menü zur Mehrfachauswahl, um mehrere Spalten auszuwählen.",
         "instruction_4": "4. **Erzeugen Sie Erkenntnisse**: Klicken Sie auf die Schaltfläche \"Erkenntnisse generieren\", um beschreibende Statistiken und andere Erkenntnisse aus den Daten anzuzeigen. Dies umfasst grundlegende Statistiken und eine Korrelationsmatrix für numerische Spalten.",
         "instruction_5": "5. **Daten visualisieren**: Unterhalb der Erkenntnisse verwenden Sie Pygwalker, um interaktive Visualisierungen zu erstellen. Diese Visualisierungen sind hochgradig anpassbar und ermöglichen es Ihnen, die Daten im Detail zu erkunden.",
+        "instruction_6": "6. **Trainieren Sie ein Machine Learning Modell**: Wählen Sie Funktionen und eine Zielspalte, um ein einfaches lineares Regressionsmodell zu trainieren.",
         "choose_file": "Wählen Sie eine Datei",
         "file_uploaded": "Datei hochgeladen:",
         "file_read_success": "Datei erfolgreich gelesen! Hier ist eine Vorschau der Daten:",
@@ -103,7 +131,14 @@ translations = {
         "correlation_matrix": "Korrelationsmatrix:",
         "no_numeric_columns": "Keine numerischen Spalten zur Korrelationsanalyse verfügbar.",
         "no_data_available": "Keine Daten verfügbar, um Erkenntnisse zu generieren.",
-        "sidebar_instructions": "### Anweisungen:\n1. Wählen Sie Ihre bevorzugte Sprache.\n2. Befolgen Sie die Anweisungen auf der Hauptseite, um Ihre Excel-Datei hochzuladen und zu analysieren."
+        "sidebar_instructions": "### Anweisungen:\n1. Wählen Sie Ihre bevorzugte Sprache.\n2. Befolgen Sie die Anweisungen auf der Hauptseite, um Ihre Excel-Datei hochzuladen und zu analysieren.",
+        "ml_section_title": "Trainieren Sie ein Machine Learning Modell",
+        "ml_select_features": "Wählen Sie Feature-Spalten",
+        "ml_select_target": "Wählen Sie die Zielspalte",
+        "ml_train_button": "Modell trainieren",
+        "ml_model_performance": "Modellleistung",
+        "ml_mse": "Mittlerer quadratischer Fehler",
+        "ml_r2": "R²-Score"
     }
 }
 
@@ -146,6 +181,32 @@ def generate_insights(df, language):
     else:
         st.write(translate_text(language, "no_data_available"))
 
+# Machine Learning Model Training Function
+def train_ml_model(df, language):
+    st.write(f"### {translate_text(language, 'ml_section_title')}")
+    
+    columns = df.columns.tolist()
+    feature_columns = st.multiselect(translate_text(language, "ml_select_features"), columns)
+    target_column = st.selectbox(translate_text(language, "ml_select_target"), columns)
+    
+    if feature_columns and target_column:
+        X = df[feature_columns]
+        y = df[target_column]
+        
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        
+        model = LinearRegression()
+        model.fit(X_train, y_train)
+        
+        y_pred = model.predict(X_test)
+        
+        mse = mean_squared_error(y_test, y_pred)
+        r2 = r2_score(y_test, y_pred)
+        
+        st.write(f"### {translate_text(language, 'ml_model_performance')}")
+        st.write(f"{translate_text(language, 'ml_mse')}: {mse}")
+        st.write(f"{translate_text(language, 'ml_r2')}: {r2}")
+
 # Excel File Analysis Function
 def excel_file_analysis(language):
     st.write(f"""
@@ -156,6 +217,7 @@ def excel_file_analysis(language):
     {translate_text(language, "instruction_3")}
     {translate_text(language, "instruction_4")}
     {translate_text(language, "instruction_5")}
+    {translate_text(language, "instruction_6")}
     """)
 
     file_path, file_name = handle_file_upload("Excel", ['xlsx'], language)
@@ -179,6 +241,9 @@ def excel_file_analysis(language):
                 # Initialize Pygwalker interface and render as HTML in Streamlit
                 walker_html = pyg.walk(df_selected)
                 st.components.v1.html(walker_html.to_html(), height=800, scrolling=True)
+                
+                # Train Machine Learning Model
+                train_ml_model(df_selected, language)
             else:
                 st.warning(translate_text(language, "select_columns_warning"))
         else:
