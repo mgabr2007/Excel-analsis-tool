@@ -39,6 +39,13 @@ translations = {
         3. **Train the Model**: The tool splits the data into training and testing sets, trains a linear regression or decision tree regression model on the training data, and evaluates it on the testing data.
         4. **Model Performance**: The tool provides the Mean Squared Error (MSE) and the R² Score to evaluate the model's performance.
         """,
+        "insights_explanation": """
+        ### Explanation of Insights
+
+        **Descriptive Statistics**: These statistics summarize the central tendency, dispersion, and shape of the dataset’s distribution, excluding NaN values. They provide a quick overview of the dataset.
+
+        **Correlation Matrix**: This matrix shows the correlation coefficients between pairs of numeric columns. Correlation coefficients range from -1 to 1. Values close to 1 indicate a strong positive correlation, values close to -1 indicate a strong negative correlation, and values close to 0 indicate no correlation.
+        """,
         "choose_file": "Choose a file",
         "file_uploaded": "File uploaded:",
         "file_read_success": "File read successfully! Here is a preview of the data:",
@@ -87,6 +94,13 @@ translations = {
         2. **اختيار الهدف**: اختر عمودًا واحدًا من بياناتك لاستخدامه كهدف (متغير تابع) للنموذج.
         3. **تدريب النموذج**: تقوم الأداة بتقسيم البيانات إلى مجموعات تدريب واختبار، وتدريب نموذج الانحدار الخطي أو نموذج شجرة القرار على بيانات التدريب، وتقييمه على بيانات الاختبار.
         4. **أداء النموذج**: توفر الأداة متوسط ​​الخطأ التربيعي (MSE) ودرجة R² لتقييم أداء النموذج.
+        """,
+        "insights_explanation": """
+        ### شرح النتائج
+
+        **الإحصاءات الوصفية**: تلخص هذه الإحصاءات النزعة المركزية والتشتت وشكل توزيع البيانات، باستثناء القيم الخالية (NaN). توفر نظرة عامة سريعة على مجموعة البيانات.
+
+        **مصفوفة الارتباط**: تظهر هذه المصفوفة معاملات الارتباط بين أزواج الأعمدة الرقمية. تتراوح معاملات الارتباط من -1 إلى 1. تشير القيم القريبة من 1 إلى ارتباط إيجابي قوي، وتشير القيم القريبة من -1 إلى ارتباط سلبي قوي، وتشير القيم القريبة من 0 إلى عدم وجود ارتباط.
         """,
         "choose_file": "اختر ملفًا",
         "file_uploaded": "تم تحميل الملف:",
@@ -137,6 +151,13 @@ translations = {
         3. **Entraîner le modèle**: L'outil divise les données en ensembles d'entraînement et de test, entraîne un modèle de régression linéaire ou un modèle d'arbre de décision sur les données d'entraînement et l'évalue sur les données de test.
         4. **Performance du modèle**: L'outil fournit l'erreur quadratique moyenne (MSE) et le score R² pour évaluer les performances du modèle.
         """,
+        "insights_explanation": """
+        ### Explication des Informations
+
+        **Statistiques Descriptives**: Ces statistiques résument la tendance centrale, la dispersion et la forme de la distribution du jeu de données, en excluant les valeurs NaN. Elles fournissent un aperçu rapide du jeu de données.
+
+        **Matrice de Corrélation**: Cette matrice montre les coefficients de corrélation entre les paires de colonnes numériques. Les coefficients de corrélation vont de -1 à 1. Les valeurs proches de 1 indiquent une forte corrélation positive, les valeurs proches de -1 indiquent une forte corrélation négative, et les valeurs proches de 0 indiquent une absence de corrélation.
+        """,
         "choose_file": "Choisissez un fichier",
         "file_uploaded": "Fichier téléchargé:",
         "file_read_success": "Fichier lu avec succès! Voici un aperçu des données:",
@@ -185,6 +206,13 @@ translations = {
         2. **Zielauswahl**: Wählen Sie eine Spalte aus Ihrem Datensatz aus, die als Ziel (abhängige Variable) für das Modell verwendet werden soll.
         3. **Modell trainieren**: Das Tool teilt die Daten in Trainings- und Testmengen auf, trainiert ein lineares Regressionsmodell oder ein Entscheidungsbaum-Regressionsmodell mit den Trainingsdaten und bewertet es mit den Testdaten.
         4. **Modellleistung**: Das Tool liefert den mittleren quadratischen Fehler (MSE) und den R²-Score zur Bewertung der Modellleistung.
+        """,
+        "insights_explanation": """
+        ### Erklärung der Erkenntnisse
+
+        **Beschreibende Statistiken**: Diese Statistiken fassen die zentrale Tendenz, Streuung und Form der Verteilung des Datensatzes zusammen, ohne NaN-Werte. Sie bieten einen schnellen Überblick über den Datensatz.
+
+        **Korrelationsmatrix**: Diese Matrix zeigt die Korrelationskoeffizienten zwischen Paaren numerischer Spalten. Die Korrelationskoeffizienten reichen von -1 bis 1. Werte nahe 1 zeigen eine starke positive Korrelation, Werte nahe -1 zeigen eine starke negative Korrelation, und Werte nahe 0 zeigen keine Korrelation.
         """,
         "choose_file": "Wählen Sie eine Datei",
         "file_uploaded": "Datei hochgeladen:",
@@ -247,6 +275,7 @@ def read_excel(file, language):
 def generate_insights(df, language):
     if not df.empty:
         st.write(translate_text(language, "descriptive_statistics"), df.describe())
+        st.write(translate_text(language, "insights_explanation"))
         numeric_df = df.select_dtypes(include=['number'])
         if not numeric_df.empty:
             st.write(translate_text(language, "correlation_matrix"))
