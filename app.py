@@ -368,6 +368,22 @@ def main():
         }[lang]
     )
 
+    if language == "ar":
+        # Inject CSS for RTL layout
+        st.markdown(
+            """
+            <style>
+            .css-1outpf7 {
+                direction: rtl;
+            }
+            .css-1v3fvcr {
+                direction: rtl;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
     # Sidebar instructions
     st.sidebar.markdown(translate_text(language, "sidebar_instructions"))
 
