@@ -375,9 +375,11 @@ def main():
             <style>
             .css-1outpf7 {
                 direction: rtl;
+                text-align: right;
             }
             .css-1v3fvcr {
                 direction: rtl;
+                text-align: right;
             }
             </style>
             """,
