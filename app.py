@@ -4,10 +4,13 @@ import tempfile
 import os
 import logging
 import pygwalker as pyg
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.exceptions import NotFittedError
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -56,7 +59,8 @@ translations = {
         "ml_train_button": "Train Model",
         "ml_model_performance": "Model Performance",
         "ml_mse": "Mean Squared Error",
-        "ml_r2": "R² Score"
+        "ml_r2": "R² Score",
+        "ml_model_choice": "Choose a Machine Learning Model"
     },
     "ar": {
         "title": "أداة تحليل ملفات Excel",
@@ -97,7 +101,8 @@ translations = {
         "ml_train_button": "تدريب النموذج",
         "ml_model_performance": "أداء النموذج",
         "ml_mse": "متوسط ​​الخطأ التربيعي",
-        "ml_r2": "درجة R²"
+        "ml_r2": "درجة R²",
+        "ml_model_choice": "اختر نموذج التعلم الآلي"
     },
     "fr": {
         "title": "Outil d'Analyse de Fichier Excel",
@@ -138,7 +143,8 @@ translations = {
         "ml_train_button": "Former le Modèle",
         "ml_model_performance": "Performance du Modèle",
         "ml_mse": "Erreur Quadratique Moyenne",
-        "ml_r2": "Score R²"
+        "ml_r2": "Score R²",
+        "ml_model_choice": "Choisissez un modèle de Machine Learning"
     },
     "de": {
         "title": "Excel-Dateianalysetool",
@@ -179,7 +185,8 @@ translations = {
         "ml_train_button": "Modell trainieren",
         "ml_model_performance": "Modellleistung",
         "ml_mse": "Mittlerer quadratischer Fehler",
-        "ml_r2": "R²-Score"
+        "ml_r2": "R²-Score",
+        "ml_model_choice": "Wählen Sie ein Machine Learning Modell"
     }
 }
 
@@ -226,6 +233,8 @@ def generate_insights(df, language):
 def train_ml_model(df, language):
     st.write(f"### {translate_text(language, 'ml_section_title')}")
     
+    model_choice = st.selectbox(translate_text(language, "ml_model_choice"), ["Linear Regression", "Decision Tree Regressor"])
+
     columns = df.columns.tolist()
     feature_columns = st.multiselect(translate_text(language, "ml_select_features"), columns)
     target_column = st.selectbox(translate_text(language, "ml_select_target"), columns)
@@ -242,14 +251,25 @@ def train_ml_model(df, language):
             if not pd.api.types.is_numeric_dtype(df[col]):
                 st.error(f"Feature column '{col}' must be numeric.")
                 return
-        
+
+        # Preprocessing pipeline
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ('num', StandardScaler(), feature_columns)
+            ])
+
+        if model_choice == "Linear Regression":
+            model = Pipeline(steps=[('preprocessor', preprocessor),
+                                    ('regressor', LinearRegression())])
+        elif model_choice == "Decision Tree Regressor":
+            model = Pipeline(steps=[('preprocessor', preprocessor),
+                                    ('regressor', DecisionTreeRegressor(random_state=42))])
+
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
-        model = LinearRegression()
+
         model.fit(X_train, y_train)
-        
         y_pred = model.predict(X_test)
-        
+
         mse = mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
         
